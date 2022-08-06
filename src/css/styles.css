@@ -5,3 +5,15 @@
     Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol';
 }
+
+body {
+  display: grid;
+  align-items: center;
+  height: 100vh;
+  background-color: #161616;
+}
+
+canvas {
+  image-rendering: pixelated;
+  width: 100vw;
+}
