@@ -7,8 +7,8 @@ import show from '../assets/sign.png';
 import popup from './Popup';
 import items from './showcase';
 
-const width = 600;
-const height = 200;
+const width = 320;
+const height = 600;
 
 function preload() {
   this.load.image('sky', blue);
@@ -48,7 +48,7 @@ function create() {
   player = this.physics.add.sprite(100, 150, 'player');
 
   sign.children.iterate((child) => {
-    child.setBounceY(0.4);
+    child.setBounceY(0.2);
   });
 
   this.physics.add.overlap(player, sign, showProject, null, this);
