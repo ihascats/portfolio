@@ -4,6 +4,8 @@ import playerSheet from '../assets/playerSpriteSheet/player.png';
 import blue from '../assets/background/blue.png';
 import grass from '../assets/platform/tile_0022.png';
 import show from '../assets/sign.png';
+import popup from './Popup';
+import items from './showcase';
 
 const width = 600;
 const height = 200;
@@ -22,8 +24,16 @@ let platform;
 let cursors;
 let sign;
 
-function showProject(character, target) {
-  target.disableBody(false, false);
+function showProject(character, atSign) {
+  let signPosition;
+  sign.children.entries.forEach((child, index) => {
+    if (child === atSign) {
+      signPosition = index;
+    }
+  });
+  if (!document.querySelector('.wrapper')) {
+    popup(signPosition);
+  }
 }
 
 function create() {
@@ -32,8 +42,8 @@ function create() {
   this.add.image(0, 0, 'sky').setOrigin(0);
   sign = this.physics.add.group({
     key: 'sign',
-    repeat: 6,
-    setXY: { x: 8, y: 0, stepX: 120 },
+    repeat: items.length - 1,
+    setXY: { x: 200, y: 0, stepX: 200 },
   });
   player = this.physics.add.sprite(100, 150, 'player');
 
@@ -83,6 +93,14 @@ function update() {
 
   if (cursors.up.isDown && player.body.touching.down) {
     player.setVelocityY(velocity * -1);
+  }
+
+  if (
+    // eslint-disable-next-line operator-linebreak
+    !this.physics.world.overlap(player, sign) &&
+    document.querySelector('.wrapper')
+  ) {
+    document.querySelector('.wrapper').remove();
   }
 }
 
