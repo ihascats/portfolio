@@ -19,6 +19,7 @@ function preload() {
     frameHeight: 23,
   });
 }
+
 let player;
 let platform;
 let cursors;
@@ -37,15 +38,15 @@ function showProject(character, atSign) {
 }
 
 function create() {
-  this.cameras.main.setBounds(0, 0, width * 2, height);
-  this.physics.world.setBounds(0, 0, width * 2, height, true, true, true, true);
   this.add.image(0, 0, 'sky').setOrigin(0);
+  this.cameras.main.setBounds(0, 0, width, height * 2);
+  this.physics.world.setBounds(0, 0, width, height * 2, true, true, true, true);
   sign = this.physics.add.group({
     key: 'sign',
     repeat: items.length - 1,
-    setXY: { x: 200, y: 0, stepX: 200 },
+    setXY: { x: 100, y: height * 2 - 26, stepX: 100 },
   });
-  player = this.physics.add.sprite(100, 150, 'player');
+  player = this.physics.add.sprite(10, height * 2 - 26, 'player');
 
   sign.children.iterate((child) => {
     child.setBounceY(0.2);
@@ -55,8 +56,8 @@ function create() {
 
   this.cameras.main.startFollow(player, true, 0.09, 0.09);
   platform = this.physics.add.staticGroup();
-  for (let i = 0; i < (width * 2) / 18; i += 1) {
-    platform.create(9 + 18 * i, height - 9, 'grass');
+  for (let i = 0; i < width / 18; i += 1) {
+    platform.create(9 + 18 * i, height * 2 - 9, 'grass');
   }
   player.setCollideWorldBounds(true);
   player.body.setGravityY(300);
