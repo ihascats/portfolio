@@ -3,7 +3,8 @@ import Phaser from 'phaser';
 import playerSheet from '../assets/playerSpriteSheet/player.png';
 import blue from '../assets/background/blue.png';
 import grass from '../assets/platform/tile_0022.png';
-import show from '../assets/sign.png';
+import show from '../assets/signSmall.png';
+import bullet from '../assets/bullet.png';
 import popup from './Popup';
 import items from './showcase';
 
@@ -15,6 +16,7 @@ let platform;
 let cursors;
 let sign;
 let interact;
+let movingPlatform;
 
 function showProject(character, atSign) {
   let signPosition;
@@ -29,7 +31,7 @@ function showProject(character, atSign) {
       popup(signPosition);
     }
     interact.x = atSign.x - interact.width / 2;
-    interact.y = atSign.y - atSign.height * 2;
+    interact.y = atSign.y - atSign.height / 2 - 6;
     interact.setText('Press ↓ to interact');
   }
 }
@@ -38,6 +40,7 @@ function preload() {
   this.load.image('sky', blue);
   this.load.image('grass', grass);
   this.load.image('sign', show);
+  this.load.image('platform', grass);
   this.load.spritesheet('player', playerSheet, {
     frameWidth: 20,
     frameHeight: 23,
@@ -55,7 +58,22 @@ function create() {
   sign = this.physics.add.group({
     key: 'sign',
     repeat: items.length - 1,
-    setXY: { x: 100, y: height * 2 - 26, stepX: 100 },
+    setScale: { x: 0.5, y: 0.5 },
+    setXY: { x: 100, y: height * 2 - 30, stepX: 100 },
+  });
+
+  movingPlatform = this.physics.add.group({
+    key: 'platform',
+    repeat: 6,
+    velocityX: 40,
+    allowGravity: false,
+    wrap: true,
+    immovable: true,
+    setXY: {
+      x: 100,
+      y: height * 2 - 100,
+      stepX: 18,
+    },
   });
 
   player = this.physics.add.sprite(10, height * 2 - 26, 'player');
@@ -63,17 +81,18 @@ function create() {
   player.body.setGravityY(800);
 
   interact = this.add.text(0, 0, '', {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'IBM Plex Mono',
     fontStyle: 'bold',
   });
 
   this.physics.add.collider(player, platform);
   this.physics.add.collider(sign, platform);
+  this.physics.add.collider(player, movingPlatform);
 
   this.cameras.main.setBounds(0, 0, width, height * 2);
-  this.physics.world.setBounds(0, 0, width, height * 2, true, true, true, true);
   this.cameras.main.startFollow(player, true, 0.09, 0.09);
+  this.physics.world.setBounds(0, 0, width, height * 2, true, true, true, true);
 
   this.physics.add.overlap(player, sign, showProject, null, this);
 
@@ -105,11 +124,16 @@ function create() {
     frameRate: 10,
     repeat: -1,
   });
+  console.log(movingPlatform);
 }
 
 let direction = true;
 
 function update() {
+  this.physics.world.wrap(
+    movingPlatform,
+    movingPlatform.children.entries[0].width / 2,
+  );
   // catch input
   cursors = this.input.keyboard.createCursorKeys();
 
