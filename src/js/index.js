@@ -10,6 +10,30 @@ import items from './showcase';
 const width = 320;
 const height = 600;
 
+let player;
+let platform;
+let cursors;
+let sign;
+let interact;
+
+function showProject(character, atSign) {
+  let signPosition;
+
+  sign.children.entries.forEach((child, index) => {
+    if (child === atSign) {
+      signPosition = index;
+    }
+  });
+  if (!document.querySelector('.wrapper')) {
+    if (cursors.down.isDown) {
+      popup(signPosition);
+    }
+    interact.x = atSign.x - interact.width / 2;
+    interact.y = atSign.y - atSign.height * 2;
+    interact.setText('Press ↓ to interact');
+  }
+}
+
 function preload() {
   this.load.image('sky', blue);
   this.load.image('grass', grass);
@@ -18,23 +42,6 @@ function preload() {
     frameWidth: 20,
     frameHeight: 23,
   });
-}
-
-let player;
-let platform;
-let cursors;
-let sign;
-
-function showProject(character, atSign) {
-  let signPosition;
-  sign.children.entries.forEach((child, index) => {
-    if (child === atSign) {
-      signPosition = index;
-    }
-  });
-  if (!document.querySelector('.wrapper')) {
-    popup(signPosition);
-  }
 }
 
 function create() {
@@ -53,7 +60,13 @@ function create() {
 
   player = this.physics.add.sprite(10, height * 2 - 26, 'player');
   player.setCollideWorldBounds(true);
-  player.body.setGravityY(300);
+  player.body.setGravityY(800);
+
+  interact = this.add.text(0, 0, '', {
+    fontSize: 14,
+    fontFamily: 'IBM Plex Mono',
+    fontStyle: 'bold',
+  });
 
   this.physics.add.collider(player, platform);
   this.physics.add.collider(sign, platform);
@@ -121,15 +134,14 @@ function update() {
   }
 
   if (cursors.up.isDown && player.body.touching.down) {
-    player.setVelocityY(velocity * -1);
+    player.setVelocityY(2 * velocity * -1);
   }
 
-  if (
-    // eslint-disable-next-line operator-linebreak
-    !this.physics.world.overlap(player, sign) &&
-    document.querySelector('.wrapper')
-  ) {
-    document.querySelector('.wrapper').remove();
+  if (!this.physics.world.overlap(player, sign)) {
+    interact.setText('');
+    if (document.querySelector('.wrapper')) {
+      document.querySelector('.wrapper').remove();
+    }
   }
 }
 
@@ -140,7 +152,7 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 300 },
+      gravity: { y: 800 },
       debug: false,
     },
   },

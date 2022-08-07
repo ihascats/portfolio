@@ -2,9 +2,9 @@
 * {
   padding: 0;
   margin: 0;
-  font-family: 'Press Start 2P', cursive, 'IBM Plex Mono', monospace, 'Ubuntu',
-    'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  font-family: 'IBM Plex Mono', monospace, 'Ubuntu', 'Roboto', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 
 body {
@@ -50,7 +50,6 @@ header {
 header > div {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  margin-left: 32px;
   text-align: center;
 }
 header > div > a > button:hover {
