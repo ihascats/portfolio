@@ -33,6 +33,15 @@ header {
   padding-top: 16px;
 }
 
+@keyframes appears {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .wrapper {
   color: wheat;
   row-gap: 16px;
@@ -41,6 +50,7 @@ header {
   width: 90%;
   padding: 8px;
   margin: 0 auto;
+  animation: appears 2s forwards;
 }
 
 .wrapper > img {
