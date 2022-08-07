@@ -39,57 +39,85 @@ function showProject(character, atSign) {
 
 function create() {
   this.add.image(0, 0, 'sky').setOrigin(0);
-  this.cameras.main.setBounds(0, 0, width, height * 2);
-  this.physics.world.setBounds(0, 0, width, height * 2, true, true, true, true);
+
+  platform = this.physics.add.staticGroup();
+  for (let i = 0; i < width / 18; i += 1) {
+    platform.create(9 + 18 * i, height * 2 - 9, 'grass');
+  }
+
   sign = this.physics.add.group({
     key: 'sign',
     repeat: items.length - 1,
     setXY: { x: 100, y: height * 2 - 26, stepX: 100 },
   });
-  player = this.physics.add.sprite(10, height * 2 - 26, 'player');
 
-  sign.children.iterate((child) => {
-    child.setBounceY(0.2);
-  });
+  player = this.physics.add.sprite(10, height * 2 - 26, 'player');
+  player.setCollideWorldBounds(true);
+  player.body.setGravityY(300);
+
+  this.physics.add.collider(player, platform);
+  this.physics.add.collider(sign, platform);
+
+  this.cameras.main.setBounds(0, 0, width, height * 2);
+  this.physics.world.setBounds(0, 0, width, height * 2, true, true, true, true);
+  this.cameras.main.startFollow(player, true, 0.09, 0.09);
 
   this.physics.add.overlap(player, sign, showProject, null, this);
 
-  this.cameras.main.startFollow(player, true, 0.09, 0.09);
-  platform = this.physics.add.staticGroup();
-  for (let i = 0; i < width / 18; i += 1) {
-    platform.create(9 + 18 * i, height * 2 - 9, 'grass');
-  }
-  player.setCollideWorldBounds(true);
-  player.body.setGravityY(300);
-  this.physics.add.collider(player, platform);
-  this.physics.add.collider(sign, platform);
+  // animations
   this.anims.create({
     key: 'left',
-    frames: this.anims.generateFrameNumbers('player', { start: 3, end: 2 }),
+    frames: this.anims.generateFrameNumbers('player', { start: 2, end: 3 }),
     frameRate: 10,
     repeat: -1,
   });
 
   this.anims.create({
     key: 'right',
-    frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
+    frames: this.anims.generateFrameNumbers('player', { start: 1, end: 0 }),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: 'stopLeft',
+    frames: this.anims.generateFrameNumbers('player', { start: 3, end: 3 }),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: 'stopRight',
+    frames: this.anims.generateFrameNumbers('player', { start: 0, end: 0 }),
     frameRate: 10,
     repeat: -1,
   });
 }
 
+let direction = true;
+
 function update() {
+  // catch input
   cursors = this.input.keyboard.createCursorKeys();
+
   const velocity = 300;
+
   if (cursors.left.isDown) {
     player.setVelocityX(velocity * -1);
     player.anims.play('left', true);
+    direction = false;
   } else if (cursors.right.isDown) {
     player.setVelocityX(velocity);
     player.anims.play('right', true);
+    direction = true;
   } else {
     player.setVelocityX(0);
     player.anims.stop();
+    if (direction) {
+      player.anims.play('stopRight', true);
+    } else {
+      player.anims.play('stopLeft', true);
+    }
   }
 
   if (cursors.up.isDown && player.body.touching.down) {
