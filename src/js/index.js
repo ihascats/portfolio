@@ -109,11 +109,6 @@ function create() {
           'mossMiddle',
         );
       }
-      // const block = platform.create(
-      //   width / 1.4 + 18 * i,
-      //   height * 2 - (150 + 100 * j),
-      //   'mossMiddle',
-      // );
       block.body.checkCollision.left = false;
       block.body.checkCollision.right = false;
       block.body.checkCollision.down = false;
