@@ -3,6 +3,9 @@ import Phaser from 'phaser';
 import playerSheet from '../assets/playerSpriteSheet/player.png';
 import blue from '../assets/background/blue.png';
 import grass from '../assets/platform/tile_0022.png';
+import mossLeft from '../assets/platform/mossLeft.png';
+import mossMiddle from '../assets/platform/mossMiddle.png';
+import mossRight from '../assets/platform/mossRight.png';
 import show from '../assets/signSmall.png';
 import popup from './Popup';
 import items from './showcase';
@@ -15,6 +18,7 @@ let platform;
 let cursors;
 let sign;
 let interact;
+let ground;
 
 function showProject(character, atSign) {
   let signPosition;
@@ -37,6 +41,9 @@ function showProject(character, atSign) {
 function preload() {
   this.load.image('sky', blue);
   this.load.image('grass', grass);
+  this.load.image('mossLeft', mossLeft);
+  this.load.image('mossMiddle', mossMiddle);
+  this.load.image('mossRight', mossRight);
   this.load.image('sign', show);
   this.load.image('platform', grass);
   this.load.spritesheet('player', playerSheet, {
@@ -48,9 +55,69 @@ function preload() {
 function create() {
   this.add.image(0, 0, 'sky').setOrigin(0);
 
-  platform = this.physics.add.staticGroup();
+  ground = this.physics.add.staticGroup();
   for (let i = 0; i < width / 18; i += 1) {
-    platform.create(9 + 18 * i, height * 2 - 9, 'grass');
+    ground.create(9 + 18 * i, height * 2 - 9, 'grass');
+  }
+
+  platform = this.physics.add.staticGroup();
+
+  for (let j = 0; j < 2; j += 1) {
+    for (let i = 0; i < 6; i += 1) {
+      let block;
+      if (i === 0) {
+        block = platform.create(
+          8 + 18 * i,
+          height * 2 - (100 + 100 * j),
+          'mossLeft',
+        );
+      } else if (i === 5) {
+        block = platform.create(
+          8 + 18 * i,
+          height * 2 - (100 + 100 * j),
+          'mossRight',
+        );
+      } else {
+        block = platform.create(
+          8 + 18 * i,
+          height * 2 - (100 + 100 * j),
+          'mossMiddle',
+        );
+      }
+      block.body.checkCollision.left = false;
+      block.body.checkCollision.right = false;
+      block.body.checkCollision.down = false;
+    }
+    for (let i = 0; i < 6; i += 1) {
+      let block;
+      if (i === 0) {
+        block = platform.create(
+          222 + 18 * i,
+          height * 2 - (150 + 100 * j),
+          'mossLeft',
+        );
+      } else if (i === 5) {
+        block = platform.create(
+          222 + 18 * i,
+          height * 2 - (150 + 100 * j),
+          'mossRight',
+        );
+      } else {
+        block = platform.create(
+          222 + 18 * i,
+          height * 2 - (150 + 100 * j),
+          'mossMiddle',
+        );
+      }
+      // const block = platform.create(
+      //   width / 1.4 + 18 * i,
+      //   height * 2 - (150 + 100 * j),
+      //   'mossMiddle',
+      // );
+      block.body.checkCollision.left = false;
+      block.body.checkCollision.right = false;
+      block.body.checkCollision.down = false;
+    }
   }
 
   sign = this.physics.add.group({
@@ -70,7 +137,13 @@ function create() {
     fontStyle: 'bold',
   });
 
-  this.physics.add.collider(player, platform);
+  this.physics.add.collider(player, ground);
+  this.physics.add.collider(player, platform, () => {
+    if (player.body.touching.down && cursors.down.isDown) {
+      player.body.position.y += 3;
+    }
+  });
+  this.physics.add.collider(sign, ground);
   this.physics.add.collider(sign, platform);
 
   this.cameras.main.setBounds(0, 0, width, height * 2);
@@ -137,6 +210,9 @@ function update() {
 
   if (cursors.up.isDown && player.body.touching.down) {
     player.setVelocityY(2 * velocity * -1);
+  }
+  if (cursors.down.isDown && player.body.touching.down) {
+    player.body.position.y += 2;
   }
 
   if (!this.physics.world.overlap(player, sign)) {
