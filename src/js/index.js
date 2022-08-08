@@ -17,6 +17,7 @@ let cursors;
 let sign;
 let interact;
 let movingPlatform;
+let onPlat;
 
 function showProject(character, atSign) {
   let signPosition;
@@ -69,6 +70,7 @@ function create() {
     allowGravity: false,
     wrap: true,
     immovable: true,
+    frictionX: 1,
     setXY: {
       x: 100,
       y: height * 2 - 100,
@@ -124,7 +126,6 @@ function create() {
     frameRate: 10,
     repeat: -1,
   });
-  console.log(movingPlatform);
 }
 
 let direction = true;
