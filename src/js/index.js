@@ -4,9 +4,6 @@ import playerSheet from '../assets/playerSpriteSheet/player.png';
 import blue from '../assets/background/blue.png';
 import grass from '../assets/platform/tile_0022.png';
 import show from '../assets/signSmall.png';
-import bulletR from '../assets/enemy/bulletRight.png';
-import bulletL from '../assets/enemy/bulletLeft.png';
-import spike from '../assets/enemy/spikes.png';
 import popup from './Popup';
 import items from './showcase';
 
@@ -18,10 +15,6 @@ let platform;
 let cursors;
 let sign;
 let interact;
-let movingPlatform;
-let spikes;
-let bulletRight;
-let bulletLeft;
 
 function showProject(character, atSign) {
   let signPosition;
@@ -41,17 +34,10 @@ function showProject(character, atSign) {
   }
 }
 
-function killPlayer() {
-  player.setTint(0xff0000);
-}
-
 function preload() {
   this.load.image('sky', blue);
   this.load.image('grass', grass);
   this.load.image('sign', show);
-  this.load.image('spike', spike);
-  this.load.image('bulletRight', bulletR);
-  this.load.image('bulletLeft', bulletL);
   this.load.image('platform', grass);
   this.load.spritesheet('player', playerSheet, {
     frameWidth: 20,
@@ -74,61 +60,6 @@ function create() {
     setXY: { x: 100, y: height * 2 - 30, stepX: 100 },
   });
 
-  movingPlatform = this.physics.add.group({
-    key: 'platform',
-    repeat: 6,
-    velocityX: 40,
-    allowGravity: false,
-    wrap: true,
-    immovable: true,
-    frictionX: 1,
-    setXY: {
-      x: 100,
-      y: height * 2 - 100,
-      stepX: 18,
-    },
-  });
-
-  spikes = this.physics.add.group({
-    key: 'spike',
-    repeat: 0,
-    setXY: {
-      x: width / 2,
-      y: height * 2 - 120,
-      stepX: 18,
-    },
-  });
-
-  bulletRight = this.physics.add.group({
-    key: 'bulletRight',
-    repeat: 6,
-    velocityX: 80,
-    allowGravity: false,
-    wrap: true,
-    immovable: true,
-    frictionX: 1,
-    setXY: {
-      x: 0,
-      y: height * 2 - 120,
-      stepY: -120,
-    },
-  });
-
-  bulletLeft = this.physics.add.group({
-    key: 'bulletLeft',
-    repeat: 6,
-    velocityX: -80,
-    allowGravity: false,
-    wrap: true,
-    immovable: true,
-    frictionX: 1,
-    setXY: {
-      x: width,
-      y: height * 2 - 100,
-      stepY: -120,
-    },
-  });
-
   player = this.physics.add.sprite(10, height * 2 - 26, 'player');
   player.setCollideWorldBounds(true);
   player.body.setGravityY(800);
@@ -141,18 +72,12 @@ function create() {
 
   this.physics.add.collider(player, platform);
   this.physics.add.collider(sign, platform);
-  this.physics.add.collider(spikes, platform);
-  this.physics.add.collider(spikes, movingPlatform);
-  this.physics.add.collider(player, movingPlatform);
 
   this.cameras.main.setBounds(0, 0, width, height * 2);
   this.cameras.main.startFollow(player, true, 0.09, 0.09);
   this.physics.world.setBounds(0, 0, width, height * 2, true, true, true, true);
 
   this.physics.add.overlap(player, sign, showProject, null, this);
-  this.physics.add.overlap(player, spikes, killPlayer, null, this);
-  this.physics.add.overlap(player, bulletRight, killPlayer, null, this);
-  this.physics.add.overlap(player, bulletLeft, killPlayer, null, this);
 
   // animations
   this.anims.create({
@@ -187,16 +112,6 @@ function create() {
 let direction = true;
 
 function update() {
-  this.physics.world.wrap(
-    movingPlatform,
-    movingPlatform.children.entries[0].width / 2,
-  );
-  this.physics.world.wrap(spikes, spikes.children.entries[0].width / 2);
-  this.physics.world.wrap(
-    bulletRight,
-    bulletRight.children.entries[0].width / 2,
-  );
-  this.physics.world.wrap(bulletLeft, bulletLeft.children.entries[0].width / 2);
   // catch input
   cursors = this.input.keyboard.createCursorKeys();
 
